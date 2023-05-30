@@ -10,7 +10,7 @@
     </parent>
     <groupId>ru.litvinov</groupId>
     <artifactId>patient-notificator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>patient-notificator</name>
     <description>patient-notificator</description>
     <properties>
@@ -71,8 +71,8 @@
             <artifactId>libphonenumber</artifactId>
             <version>8.13.13</version>
         </dependency>
-
     </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -105,20 +105,31 @@
     <profiles>
         <profile>
             <id>production</id>
+            <properties>
+                <vaadin.productionMode>true</vaadin.productionMode>
+                <vaadin.compatibilityMode>false</vaadin.compatibilityMode>
+                <spring.profiles.active>production</spring.profiles.active>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>flow-server-production-mode</artifactId>
+                    <version>24.0.5</version>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>com.vaadin</groupId>
-                        <artifactId>vaadin-maven-plugin</artifactId>
-                        <version>${vaadin.version}</version>
+                        <artifactId>flow-maven-plugin</artifactId>
+                        <version>24.0.5</version>
                         <executions>
                             <execution>
-                                <id>frontend</id>
-                                <phase>compile</phase>
                                 <goals>
                                     <goal>prepare-frontend</goal>
                                     <goal>build-frontend</goal>
                                 </goals>
+                                <phase>compile</phase>
                             </execution>
                         </executions>
                     </plugin>

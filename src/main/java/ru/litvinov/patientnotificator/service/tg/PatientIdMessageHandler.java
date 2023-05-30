@@ -8,7 +8,7 @@ import ru.litvinov.patientnotificator.service.PatientService;
 
 @Component
 @AllArgsConstructor
-public class StartMessageHandler implements MessageHandler {
+public class PatientIdMessageHandler implements MessageHandler {
 
     private final PatientService patientService;
 
@@ -16,20 +16,28 @@ public class StartMessageHandler implements MessageHandler {
     public boolean check(final Update update) {
         if (!update.hasMessage() || !update.getMessage().hasText()) return false;
         final var inMessage = update.getMessage();
-        return "/start".equals(inMessage.getText());
+        return inMessage.getText().matches("\\d+");
     }
 
     @Override
     public SendMessage handle(final Update update) {
         final var inMessage = update.getMessage();
         final var chatId = inMessage.getChatId();
-        final var patient = patientService.findByChatId(chatId);
-        if (patient.isPresent()) {
+        final var unknownPatientMessage = "Извините, я не узнаю Вас(";
+        try {
+            final var patientId = Long.parseLong(update.getMessage().getText());
+            final var patient = patientService.findById(patientId);
+            if (patient.isEmpty()) {
+                return new SendMessage(chatId.toString(), unknownPatientMessage);
+            }
+            final var p = patient.get();
+            p.setChatId(chatId);
+            patientService.save(p);
             final var response = String.format("Здравствуйте, %s", patient.get().getName());
             return new SendMessage(chatId.toString(), response);
+        } catch (Exception e) {
+            return new SendMessage(chatId.toString(), unknownPatientMessage);
         }
-        final var response = "Здравствуйте, для начала работы введите свой уникальный идентификационный номер";
-        return new SendMessage(chatId.toString(), response);
     }
 
 }

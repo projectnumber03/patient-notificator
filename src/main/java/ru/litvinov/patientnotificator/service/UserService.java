@@ -46,11 +46,6 @@ public class UserService {
         return userRepository.findByLoginLike(login);
     }
 
-    public List<User> findActiveByEmails(final List<String> emails) {
-        if (CollectionUtils.isEmpty(emails)) return Collections.emptyList();
-        return userRepository.findByEmail(emails);
-    }
-
     public void delete(final User user) {
         if (Objects.isNull(user)) return;
         userRepository.delete(user);

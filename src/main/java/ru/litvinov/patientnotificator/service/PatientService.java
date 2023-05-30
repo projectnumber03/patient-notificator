@@ -8,7 +8,6 @@ import ru.litvinov.patientnotificator.repository.PatientRepository;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +22,11 @@ public class PatientService {
     public Optional<Patient> findById(final Long id) {
         if (Objects.isNull(id)) return Optional.empty();
         return patientRepository.findById(id);
+    }
+
+    public Optional<Patient> findByChatId(final Long chatId) {
+        if (Objects.isNull(chatId)) return Optional.empty();
+        return patientRepository.findByChatId(chatId);
     }
 
     public void delete(final Patient patient) {
