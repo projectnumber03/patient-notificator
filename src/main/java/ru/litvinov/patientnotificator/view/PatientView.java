@@ -133,32 +133,41 @@ public class PatientView extends AbstractView {
             deleteButton.addClickListener(e -> new ConfirmationDialog(String.format("Хотите удалить пациента \"%s\"?", patient.getName()), callback).open());
             layout.add(deleteButton);
             final var stateCheckButton = new Button();
+            stateCheckButton.setTooltipText("Запросить информацию о самочувствии");
             stateCheckButton.setIcon(VaadinIcon.CLIPBOARD_HEART.create());
-            stateCheckButton.addClickListener(e -> {
-                final var p = patientService.findById(patient.getId());
-                if (p.isEmpty() || Objects.isNull(p.get().getChatId())) {
-                    final var notification = Notification.show("У пациента отсутствует связь с ботом");
+            stateCheckButton.addClickListener(event -> {
+                try {
+                    final var p = patientService.findById(patient.getId());
+                    if (p.isEmpty() || Objects.isNull(p.get().getChatId())) {
+                        final var notification = Notification.show("У пациента отсутствует связь с ботом");
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.setPosition(Notification.Position.TOP_CENTER);
+                        return;
+                    }
+                    final var message = new SendMessage(p.get().getChatId().toString(), String.format("Здравствуйте, %s! Как Вы себя чувствуете?", p.get().getName()));
+                    final var markupInline = new InlineKeyboardMarkup();
+                    final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                    final List<InlineKeyboardButton> rowInline = new ArrayList<>();
+                    final var goodStateButton = new InlineKeyboardButton();
+                    goodStateButton.setText("Хорошо");
+                    goodStateButton.setCallbackData(Patient.State.GOOD.getCommand());
+                    rowInline.add(goodStateButton);
+                    final var illStateButton = new InlineKeyboardButton();
+                    illStateButton.setText("Плохо");
+                    illStateButton.setCallbackData(Patient.State.ILL.getCommand());
+                    rowInline.add(illStateButton);
+                    rowsInline.add(rowInline);
+                    markupInline.setKeyboard(rowsInline);
+                    message.setReplyMarkup(markupInline);
+                    telegramBot.send(message);
+                    final var notification = Notification.show("Запрос отправлен");
+                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                    notification.setPosition(Notification.Position.TOP_CENTER);
+                } catch (Exception e) {
+                    final var notification = Notification.show("При отправке запроса произошла ошибка");
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.setPosition(Notification.Position.TOP_CENTER);
-                    return;
                 }
-                final var message = new SendMessage(p.get().getChatId().toString(), String.format("Здравствуйте, %s! Как Вы себя чувствуете?", p.get().getName()));
-                final var markupInline = new InlineKeyboardMarkup();
-                final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                final List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                final var goodStateButton = new InlineKeyboardButton();
-                goodStateButton.setText("Хорошо");
-                goodStateButton.setCallbackData(Patient.State.GOOD.getCommand());
-                rowInline.add(goodStateButton);
-                final var illStateButton = new InlineKeyboardButton();
-                illStateButton.setText("Плохо");
-                illStateButton.setCallbackData(Patient.State.ILL.getCommand());
-                rowInline.add(illStateButton);
-                rowsInline.add(rowInline);
-                markupInline.setKeyboard(rowsInline);
-                message.setReplyMarkup(markupInline);
-
-                telegramBot.send(message);
             });
             layout.add(stateCheckButton);
         };
