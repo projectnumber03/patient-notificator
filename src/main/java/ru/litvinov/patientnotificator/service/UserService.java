@@ -47,13 +47,11 @@ public class UserService {
     }
 
     public void delete(final User user) {
-        if (Objects.isNull(user)) return;
-        userRepository.delete(user);
+        Optional.ofNullable(user).ifPresent(userRepository::delete);
     }
 
     public void save(final User user) {
-        if (Objects.isNull(user)) return;
-        userRepository.save(user);
+        Optional.ofNullable(user).ifPresent(userRepository::save);
     }
 
     public User getAuthenticatedUser() {

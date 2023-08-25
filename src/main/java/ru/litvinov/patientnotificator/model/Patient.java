@@ -29,20 +29,23 @@ public final class Patient {
     @Column(name = "CREATED_ON")
     LocalDateTime createdOn;
 
-    @Column(name = "CHAT_ID")
-    Long chatId;
+    @Column(name = "UPDATED_ON")
+    LocalDateTime updatedOn;
+
+    @Column(name = "CHECKED_ON")
+    LocalDateTime checkedOn;
 
     @Enumerated
     State state;
 
-    @Column(name = "UPDATED_ON")
-    LocalDateTime updatedOn;
+    @ManyToOne
+    Layout layout;
 
     @Getter
     @AllArgsConstructor
     public enum State {
-        GOOD("Хорошее", "/good"),
-        ILL("Плохое", "/ill");
+        GOOD("Хорошее", "1"),
+        ILL("Плохое", "2");
 
         private final String description;
 

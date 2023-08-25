@@ -25,14 +25,12 @@ public class PhoneNumberService {
 
     public Optional<String> format(final String value) {
         final Optional<Phonenumber.PhoneNumber> number = parse(value);
-        if (number.isEmpty()) return Optional.empty();
-        return Optional.of(phoneUtil.format(number.get(), PhoneNumberUtil.PhoneNumberFormat.E164));
+        return number.map(phoneNumber -> phoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164));
     }
 
     public boolean isValid(final String value) {
         final Optional<Phonenumber.PhoneNumber> number = parse(value);
-        if (number.isEmpty()) return false;
-        return phoneUtil.isValidNumber(number.get());
+        return number.filter(phoneUtil::isValidNumber).isPresent();
     }
 
 }

@@ -24,19 +24,12 @@ public class PatientService {
         return patientRepository.findById(id);
     }
 
-    public Optional<Patient> findByChatId(final Long chatId) {
-        if (Objects.isNull(chatId)) return Optional.empty();
-        return patientRepository.findByChatId(chatId);
-    }
-
     public void delete(final Patient patient) {
-        if (Objects.isNull(patient)) return;
-        patientRepository.delete(patient);
+        Optional.ofNullable(patient).ifPresent(patientRepository::delete);
     }
 
     public void save(final Patient patient) {
-        if (Objects.isNull(patient)) return;
-        patientRepository.save(patient);
+        Optional.ofNullable(patient).ifPresent(patientRepository::saveAndFlush);
     }
 
 }

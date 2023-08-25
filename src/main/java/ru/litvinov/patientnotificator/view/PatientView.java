@@ -9,8 +9,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -20,18 +18,18 @@ import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.PermitAll;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.litvinov.patientnotificator.component.ConfirmationDialog;
 import ru.litvinov.patientnotificator.component.NewButton;
 import ru.litvinov.patientnotificator.component.pagination.PaginatedGrid;
 import ru.litvinov.patientnotificator.model.Patient;
 import ru.litvinov.patientnotificator.service.PatientService;
-import ru.litvinov.patientnotificator.service.tg.TelegramBot;
+import ru.litvinov.patientnotificator.service.SmsService;
 
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static ru.litvinov.patientnotificator.util.Constants.DELETE;
 import static ru.litvinov.patientnotificator.util.Constants.PATIENTS;
@@ -43,19 +41,13 @@ public class PatientView extends AbstractView {
 
     private final PatientService patientService;
 
-    private final TelegramBot telegramBot;
-
     private final PaginatedGrid<Patient> table;
 
-    public PatientView(
-            final PatientService patientService,
-            final TelegramBot telegramBot
-    ) {
+    public PatientView(final PatientService patientService, final SmsService smsService) {
         this.patientService = patientService;
-        this.telegramBot = telegramBot;
         this.table = createTable();
-        this.telegramBot.setUi(UI.getCurrent());
-        this.telegramBot.setTable(this.table);
+        smsService.setUi(UI.getCurrent());
+        smsService.setTable(table);
     }
 
     @Override
@@ -132,44 +124,6 @@ public class PatientView extends AbstractView {
             deleteButton.setText(DELETE);
             deleteButton.addClickListener(e -> new ConfirmationDialog(String.format("Хотите удалить пациента \"%s\"?", patient.getName()), callback).open());
             layout.add(deleteButton);
-            final var stateCheckButton = new Button();
-            stateCheckButton.setTooltipText("Запросить информацию о самочувствии");
-            stateCheckButton.setIcon(VaadinIcon.CLIPBOARD_HEART.create());
-            stateCheckButton.addClickListener(event -> {
-                try {
-                    final var p = patientService.findById(patient.getId());
-                    if (p.isEmpty() || Objects.isNull(p.get().getChatId())) {
-                        final var notification = Notification.show("У пациента отсутствует связь с ботом");
-                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                        notification.setPosition(Notification.Position.TOP_CENTER);
-                        return;
-                    }
-                    final var message = new SendMessage(p.get().getChatId().toString(), String.format("Здравствуйте, %s! Как Вы себя чувствуете?", p.get().getName()));
-                    final var markupInline = new InlineKeyboardMarkup();
-                    final List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                    final List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                    final var goodStateButton = new InlineKeyboardButton();
-                    goodStateButton.setText("Хорошо");
-                    goodStateButton.setCallbackData(Patient.State.GOOD.getCommand());
-                    rowInline.add(goodStateButton);
-                    final var illStateButton = new InlineKeyboardButton();
-                    illStateButton.setText("Плохо");
-                    illStateButton.setCallbackData(Patient.State.ILL.getCommand());
-                    rowInline.add(illStateButton);
-                    rowsInline.add(rowInline);
-                    markupInline.setKeyboard(rowsInline);
-                    message.setReplyMarkup(markupInline);
-                    telegramBot.send(message);
-                    final var notification = Notification.show("Запрос отправлен");
-                    notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                    notification.setPosition(Notification.Position.TOP_CENTER);
-                } catch (Exception e) {
-                    final var notification = Notification.show("При отправке запроса произошла ошибка");
-                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                    notification.setPosition(Notification.Position.TOP_CENTER);
-                }
-            });
-            layout.add(stateCheckButton);
         };
         return new ComponentRenderer<>(HorizontalLayout::new, actionProcessor);
     }

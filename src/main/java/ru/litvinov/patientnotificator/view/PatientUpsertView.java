@@ -1,6 +1,8 @@
 package ru.litvinov.patientnotificator.view;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -10,12 +12,16 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.CollectionUtils;
+import ru.litvinov.patientnotificator.model.Layout;
 import ru.litvinov.patientnotificator.model.Patient;
+import ru.litvinov.patientnotificator.service.LayoutService;
 import ru.litvinov.patientnotificator.service.PatientService;
 import ru.litvinov.patientnotificator.service.PhoneNumberService;
+import ru.litvinov.patientnotificator.service.SchedulerService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static ru.litvinov.patientnotificator.util.Constants.*;
@@ -28,11 +34,17 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
 
     private final PatientService patientService;
 
+    private final LayoutService layoutService;
+
     private final PhoneNumberService phoneNumberService;
+
+    private final SchedulerService schedulerService;
 
     private final TextField fioField = new TextField("ФИО");
 
     private final TextField phoneField = new TextField("Номер телефона");
+
+    private final ComboBox<Layout> layoutField = new ComboBox<>("Шаблон уведомления");
 
     private final Button saveButton = new Button(SAVE);
 
@@ -44,8 +56,19 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
         super.initialize();
         vertical.add(fioField);
         vertical.add(phoneField);
+        vertical.add(createLayoutField());
         vertical.add(createSaveButton());
         add(vertical);
+    }
+
+    private Component createLayoutField() {
+        layoutField.setItemLabelGenerator(Layout::getName);
+        final List<Layout> items = layoutService.findAllByType(Layout.Type.QUESTION);
+        layoutField.setItems(items);
+        if (!CollectionUtils.isEmpty(items)) {
+            layoutField.setValue(items.iterator().next());
+        }
+        return layoutField;
     }
 
     private Button createSaveButton() {
@@ -60,9 +83,11 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
     private void save(final Patient patient) {
         patient.setName(fioField.getValue());
         phoneNumberService.format(phoneField.getValue()).ifPresent(patient::setPhone);
+        patient.setLayout(layoutField.getValue());
         patient.setCreatedOn(Optional.ofNullable(patient.getCreatedOn()).orElse(LocalDateTime.now()));
-
+        patient.setUpdatedOn(LocalDateTime.now());
         patientService.save(patient);
+        schedulerService.schedule(patient);
     }
 
     @Override
@@ -76,6 +101,7 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
         if (patient.isEmpty()) return;
         Optional.ofNullable(patient.get().getName()).ifPresent(fioField::setValue);
         Optional.ofNullable(patient.get().getPhone()).ifPresent(phoneField::setValue);
+        Optional.ofNullable(patient.get().getLayout()).ifPresent(layoutField::setValue);
         saveListener.remove();
         saveListener = saveButton.addClickListener(e -> {
             if (!validate()) return;

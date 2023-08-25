@@ -3,12 +3,15 @@ package ru.litvinov.patientnotificator.config;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.net.http.HttpClient;
 import java.util.List;
 
 @Configuration
+@EnableScheduling
 public class BaseConfig {
 
     @Bean
@@ -26,6 +29,11 @@ public class BaseConfig {
         russianI18n.setCancel("Отмена");
         russianI18n.setFirstDayOfWeek(1);
         return russianI18n;
+    }
+
+    @Bean
+    public HttpClient httpClient() {
+        return HttpClient.newHttpClient();
     }
 
 }
