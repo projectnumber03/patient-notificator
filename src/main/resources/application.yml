@@ -9,6 +9,14 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: 12345
+  mail:
+    host: smtp.yandex.ru
+    from: dunderflute@yandex.ru
+    to: abarakus@bk.ru
+    username: dunderflute
+    password: syxlqgfuuwhplcwr
+    port: 465
+    protocol: smtps
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
