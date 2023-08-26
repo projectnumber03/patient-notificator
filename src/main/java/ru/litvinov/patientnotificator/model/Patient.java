@@ -35,7 +35,7 @@ public final class Patient {
     @Column(name = "CHECKED_ON")
     LocalDateTime checkedOn;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     State state;
 
     @ManyToOne

@@ -95,6 +95,7 @@ public class SmsService {
             Patient.State.getByCommand(sms.getText().strip()).ifPresent(state -> {
                 p.setCheckedOn(LocalDateTime.now());
                 p.setState(state);
+                patientRepository.save(p);
             });
         });
         ui.access(() -> table.setItems(patientRepository.findAll()));
