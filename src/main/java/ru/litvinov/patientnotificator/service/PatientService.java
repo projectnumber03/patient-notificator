@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.litvinov.patientnotificator.model.Patient;
 import ru.litvinov.patientnotificator.repository.PatientRepository;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,6 +19,11 @@ public class PatientService {
 
     public List<Patient> findAll() {
         return patientRepository.findAll();
+    }
+
+    public List<Patient> findAllByCheckedOnBefore(final LocalDateTime checkedOn) {
+        if (Objects.isNull(checkedOn)) return Collections.emptyList();
+        return patientRepository.findAllByStateOrCheckedOnBefore(Patient.State.ILL, checkedOn);
     }
 
     public Optional<Patient> findById(final Long id) {

@@ -51,7 +51,8 @@ public class MainView extends AppLayout {
         tabs.add(
                 createTab(VaadinIcon.USERS, PATIENTS, PatientView.class),
                 createTab(VaadinIcon.USER_CARD, USERS, UserView.class),
-                createTab(VaadinIcon.LAYOUT, LAYOUTS, LayoutView.class)
+                createTab(VaadinIcon.LAYOUT, LAYOUTS, LayoutView.class),
+                createTab(VaadinIcon.ENVELOPE_OPEN, BROADCASTS, BroadcastView.class)
         );
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         return tabs;

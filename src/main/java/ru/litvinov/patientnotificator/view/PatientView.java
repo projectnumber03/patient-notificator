@@ -3,13 +3,9 @@ package ru.litvinov.patientnotificator.view;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.function.SerializableBiConsumer;
@@ -18,11 +14,12 @@ import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.PermitAll;
-import ru.litvinov.patientnotificator.component.ConfirmationDialog;
 import ru.litvinov.patientnotificator.component.NewButton;
+import ru.litvinov.patientnotificator.component.PatientTableContextMenu;
 import ru.litvinov.patientnotificator.component.pagination.PaginatedGrid;
 import ru.litvinov.patientnotificator.model.Patient;
 import ru.litvinov.patientnotificator.service.PatientService;
+import ru.litvinov.patientnotificator.service.SchedulerService;
 import ru.litvinov.patientnotificator.service.SmsService;
 
 import java.time.format.DateTimeFormatter;
@@ -31,7 +28,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ru.litvinov.patientnotificator.util.Constants.DELETE;
 import static ru.litvinov.patientnotificator.util.Constants.PATIENTS;
 
 @PermitAll
@@ -41,10 +37,17 @@ public class PatientView extends AbstractView {
 
     private final PatientService patientService;
 
+    private final SchedulerService schedulerService;
+
     private final PaginatedGrid<Patient> table;
 
-    public PatientView(final PatientService patientService, final SmsService smsService) {
+    public PatientView(
+            final PatientService patientService,
+            final SmsService smsService,
+            final SchedulerService schedulerService
+    ) {
         this.patientService = patientService;
+        this.schedulerService = schedulerService;
         this.table = createTable();
         smsService.setUi(UI.getCurrent());
         smsService.setTable(table);
@@ -89,7 +92,7 @@ public class PatientView extends AbstractView {
             span.getElement().getThemeList().add("badge contrast");
             return span;
         }).setHeader("Самочувствие");
-        grid.addColumn(createActionRenderer()).setTextAlign(ColumnTextAlign.CENTER).setAutoWidth(true);
+        new PatientTableContextMenu(grid, patientService, schedulerService);
         final var paginatedGrid = new PaginatedGrid<>(grid);
         paginatedGrid.setItems(patientService.findAll());
 
@@ -110,22 +113,6 @@ public class PatientView extends AbstractView {
         parameters.put("id", patient.getId().toString());
         parameters.put("name", patient.getName());
         return QueryParameters.simple(parameters);
-    }
-
-    private ComponentRenderer<HorizontalLayout, Patient> createActionRenderer() {
-        final SerializableBiConsumer<HorizontalLayout, Patient> actionProcessor = (layout, patient) -> {
-            final Runnable callback = () -> {
-                patientService.delete(patient);
-                table.setItems(patientService.findAll());
-            };
-            final Button deleteButton = new Button();
-            deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
-            deleteButton.setIcon(VaadinIcon.TRASH.create());
-            deleteButton.setText(DELETE);
-            deleteButton.addClickListener(e -> new ConfirmationDialog(String.format("Хотите удалить пациента \"%s\"?", patient.getName()), callback).open());
-            layout.add(deleteButton);
-        };
-        return new ComponentRenderer<>(HorizontalLayout::new, actionProcessor);
     }
 
 }

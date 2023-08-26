@@ -2,6 +2,7 @@ package ru.litvinov.patientnotificator.service;
 
 
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +17,10 @@ import ru.litvinov.patientnotificator.repository.SchedulerTaskRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import static ru.litvinov.patientnotificator.util.Constants.NAME_TAG;
 
@@ -34,6 +37,7 @@ public class SchedulerService {
 
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
+    @Getter
     private final ConcurrentLinkedDeque<SchedulerTask> taskCache = new ConcurrentLinkedDeque<>();
 
     private final SchedulerTaskRepository schedulerTaskRepository;
@@ -46,7 +50,8 @@ public class SchedulerService {
             st.setFuture(submit(st));
             taskCache.add(st);
         });
-        log.info("there are {} tasks in cache", taskCache.size());
+        if (CollectionUtils.isEmpty(taskCache)) return;
+        log.info("tasks in cache: {}", taskCache.stream().map(SchedulerTask::toString).collect(Collectors.joining("\n")));
     }
 
     public void schedule(final Patient patient) {
@@ -79,6 +84,22 @@ public class SchedulerService {
             schedulerTaskRepository.delete(schedulerTask);
         };
         return executorService.schedule(runnable, ChronoUnit.MINUTES.between(LocalDateTime.now(), schedulerTask.getExecutionDate()), TimeUnit.MINUTES);
+    }
+
+    public void deleteAllByPatient(final Patient patient) {
+        final var allByPatient = schedulerTaskRepository.findAllByPatient(patient);
+        if (CollectionUtils.isEmpty(allByPatient)) return;
+        allByPatient.forEach(st -> {
+            Optional.ofNullable(st.getFuture()).ifPresent(sf -> sf.cancel(true));
+            taskCache.remove(st);
+        });
+        schedulerTaskRepository.deleteAll(allByPatient);
+    }
+
+    public void delete(final SchedulerTask schedulerTask) {
+        Optional.ofNullable(schedulerTask.getFuture()).ifPresent(sf -> sf.cancel(true));
+        taskCache.remove(schedulerTask);
+        schedulerTaskRepository.delete(schedulerTask);
     }
 
 }

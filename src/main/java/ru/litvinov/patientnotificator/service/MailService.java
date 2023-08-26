@@ -23,7 +23,10 @@ public class MailService {
     @Value("${spring.mail.to}")
     private String to;
 
-    public void sendMail(final String text, final String subject) {
+    @Value("${spring.mail.subject}")
+    private String subject;
+
+    public void sendMail(final String text) {
         try {
             final var message = mailSender.createMimeMessage();
             final var helper = new MimeMessageHelper(message, true, "UTF-8");

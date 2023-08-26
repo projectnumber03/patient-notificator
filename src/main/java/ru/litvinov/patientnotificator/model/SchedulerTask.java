@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public final class SchedulerTask {
     Patient patient;
 
     @Transient
+    @ToString.Exclude
     ScheduledFuture<?> future;
 
     public SchedulerTask(final UUID id, final LocalDateTime executionDate, final Layout layout, final Patient patient) {
