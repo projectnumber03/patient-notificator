@@ -21,6 +21,9 @@ public final class Patient {
     Long id;
 
     @Column
+    Integer fileNumber;
+
+    @Column
     String name;
 
     @Column

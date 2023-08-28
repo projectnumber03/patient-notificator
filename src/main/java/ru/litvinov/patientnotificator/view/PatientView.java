@@ -72,7 +72,7 @@ public class PatientView extends AbstractView {
     private PaginatedGrid<Patient> createTable() {
         final Grid<Patient> grid = new Grid<>();
         grid.addColumn(createEditButtonRenderer()).setHeader("ФИО");
-        grid.addColumn(Patient::getId).setHeader("Номер в системе");
+        grid.addColumn(Patient::getFileNumber).setHeader("Номер в системе");
         grid.addColumn(Patient::getPhone).setHeader("Номер телефона");
         grid.addColumn(patient -> DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(patient.getCreatedOn())).setHeader("Создан");
         grid.addColumn(patient -> Optional.ofNullable(patient.getUpdatedOn()).map(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")::format).orElse("н/д")).setHeader("Дата проверки");
