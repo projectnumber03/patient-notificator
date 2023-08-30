@@ -104,7 +104,7 @@ public class PatientView extends AbstractView {
             span.getElement().getThemeList().add("badge contrast");
             return span;
         }).setHeader("Самочувствие");
-        new PatientTableContextMenu(grid, patientService, schedulerService);
+        new PatientTableContextMenu(grid, patientService, schedulerService, patientFilter);
         final var headerRow = grid.appendHeaderRow();
         final var paginatedGrid = new PaginatedGrid<>(grid);
         headerRow.getCell(nameColumn).setComponent(createTextFilterHeader(v -> {

@@ -78,7 +78,9 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
     private Button createSaveButton() {
         saveListener = saveButton.addClickListener(e -> {
             if (!validate()) return;
-            save(new Patient());
+            final var patient = new Patient();
+            save(patient);
+            schedulerService.schedule(patient);
             saveButton.getUI().ifPresent(ui -> ui.navigate("patients"));
         });
         return saveButton;
@@ -91,10 +93,7 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
         patient.setLayout(layoutField.getValue());
         patient.setCreatedOn(Optional.ofNullable(patient.getCreatedOn()).orElse(LocalDateTime.now()));
         patient.setUpdatedOn(LocalDateTime.now());
-        patient.setState(null);
-        patient.setCheckedOn(null);
         patientService.save(patient);
-        schedulerService.schedule(patient);
     }
 
     @Override
