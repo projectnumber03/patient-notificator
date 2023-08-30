@@ -17,6 +17,7 @@ import ru.litvinov.patientnotificator.repository.SchedulerTaskRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -57,7 +58,7 @@ public class SchedulerService {
     public void schedule(final Patient patient) {
         final List<SchedulerTask> allByPatientAndLayoutType = schedulerTaskRepository.findAllByPatientAndLayout_Type(patient, Layout.Type.QUESTION);
         if (!CollectionUtils.isEmpty(allByPatientAndLayoutType)) {
-            allByPatientAndLayoutType.forEach(sf -> sf.getFuture().cancel(true));
+            allByPatientAndLayoutType.stream().filter(sf -> Objects.nonNull(sf.getFuture())).forEach(sf -> sf.getFuture().cancel(true));
             taskCache.removeAll(allByPatientAndLayoutType);
             schedulerTaskRepository.deleteAll(allByPatientAndLayoutType);
         }

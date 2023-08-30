@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class PaginatedGrid<T> extends VerticalLayout {
 
@@ -117,6 +118,10 @@ public class PaginatedGrid<T> extends VerticalLayout {
             return;
         }
         grid.setItems(items.get(active));
+    }
+
+    public void setItems(final Predicate<T> predicate) {
+        setItems(items.stream().flatMap(Collection::stream).filter(predicate).toList());
     }
 
     public void setItems(final Collection<T> items) {
