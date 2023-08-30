@@ -91,6 +91,8 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
         patient.setLayout(layoutField.getValue());
         patient.setCreatedOn(Optional.ofNullable(patient.getCreatedOn()).orElse(LocalDateTime.now()));
         patient.setUpdatedOn(LocalDateTime.now());
+        patient.setState(null);
+        patient.setCheckedOn(null);
         patientService.save(patient);
         schedulerService.schedule(patient);
     }

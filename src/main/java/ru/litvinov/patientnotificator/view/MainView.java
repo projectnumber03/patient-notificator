@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static ru.litvinov.patientnotificator.util.Constants.*;
 
+@CssImport(value = "./css/vaadin-menu-bar-button.css", themeFor = "vaadin-menu-bar-button")
 public class MainView extends AppLayout {
 
     private final UserService userService;
@@ -77,10 +79,10 @@ public class MainView extends AppLayout {
         layout.setSpacing(false);
         layout.setPadding(false);
         layout.setAlignItems(FlexComponent.Alignment.END);
-        layout.setWidthFull();
         final var menuBar = new MenuBar();
         final var user = userService.getAuthenticatedUser();
-        final var menuItem = menuBar.addItem(new Html(String.format("<div style=\"width: 400px\">%s<br/>(%s)<div>", user.getName(), user.getRoles().stream().map(Role::getDescription).collect(Collectors.joining(", ")))));
+        final var html = new Html(String.format("<div style=\"width: 400px\">%s<br/>(%s)<div>", user.getName(), user.getRoles().stream().map(Role::getDescription).collect(Collectors.joining(", "))));
+        final var menuItem = menuBar.addItem(html);
         final var logoutButton = new Button(EXIT);
         logoutButton.setThemeName("tertiary");
         logoutButton.setIcon(VaadinIcon.SIGN_OUT.create());

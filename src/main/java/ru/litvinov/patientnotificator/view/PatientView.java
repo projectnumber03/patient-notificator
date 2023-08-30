@@ -75,7 +75,8 @@ public class PatientView extends AbstractView {
         grid.addColumn(Patient::getFileNumber).setHeader("Номер в системе");
         grid.addColumn(Patient::getPhone).setHeader("Номер телефона");
         grid.addColumn(patient -> DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(patient.getCreatedOn())).setHeader("Создан");
-        grid.addColumn(patient -> Optional.ofNullable(patient.getUpdatedOn()).map(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")::format).orElse("н/д")).setHeader("Дата проверки");
+        grid.addColumn(patient -> Optional.ofNullable(patient.getUpdatedOn()).map(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")::format).orElse("н/д")).setHeader("Изменён");
+        grid.addColumn(patient -> Optional.ofNullable(patient.getCheckedOn()).map(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")::format).orElse("н/д")).setHeader("Дата проверки");
         grid.addComponentColumn(patient -> {
             final var state = patient.getState();
             if (Objects.nonNull(state) && state == Patient.State.GOOD) {

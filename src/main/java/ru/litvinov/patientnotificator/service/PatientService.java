@@ -21,9 +21,9 @@ public class PatientService {
         return patientRepository.findAll();
     }
 
-    public List<Patient> findAllByCheckedOnBefore(final LocalDateTime checkedOn) {
+    public List<Patient> findAlertPatients(final LocalDateTime checkedOn) {
         if (Objects.isNull(checkedOn)) return Collections.emptyList();
-        return patientRepository.findAllByStateOrCheckedOnBefore(Patient.State.ILL, checkedOn);
+        return patientRepository.findAlertPatients();
     }
 
     public Optional<Patient> findById(final Long id) {

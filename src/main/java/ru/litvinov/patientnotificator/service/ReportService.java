@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReportService {
+public class ReportService implements ReportServiceMBean {
 
     @Value("${exolve.sms.interval}")
     private Integer interval;
@@ -23,7 +23,7 @@ public class ReportService {
 
     @Scheduled(cron = "${cron.expression.report}")
     public void sendReport() {
-        final var patients = patientService.findAllByCheckedOnBefore(LocalDateTime.now().minusMinutes(interval));
+        final var patients = patientService.findAlertPatients(LocalDateTime.now().minusMinutes(interval));
         final var text = patients.stream().map(p -> String.format("%s %s", p.getPhone(), p.getName())).collect(Collectors.joining("<br>"));
         mailService.sendMail(text);
     }

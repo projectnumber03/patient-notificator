@@ -6,6 +6,7 @@ import ru.litvinov.patientnotificator.model.Patient;
 import ru.litvinov.patientnotificator.service.PatientService;
 import ru.litvinov.patientnotificator.service.SchedulerService;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static ru.litvinov.patientnotificator.util.Constants.*;
@@ -20,6 +21,25 @@ public class PatientTableContextMenu {
 
         final var sendBroadcastItem = menu.addItem(SEND_BROADCAST);
         sendBroadcastItem.addMenuItemClickListener(event -> event.getItem().ifPresent(patient -> sendBroadcastItem.getUI().ifPresent(ui -> ui.navigate("patients/broadcast/", getQueryParameters(patient)))));
+
+        final var setStatusItem = menu.addItem("Установить статус");
+        final var statusItemSubMenu = setStatusItem.getSubMenu();
+        statusItemSubMenu.addItem("(нет)", event -> {
+            event.getItem().ifPresent(patient -> {
+                patient.setState(null);
+                patientService.save(patient);
+                event.getGrid().setItems(patientService.findAll());
+            });
+        });
+        Arrays.stream(Patient.State.values()).forEach(state -> {
+            statusItemSubMenu.addItem(state.getDescription(), event -> {
+                event.getItem().ifPresent(patient -> {
+                    patient.setState(state);
+                    patientService.save(patient);
+                    event.getGrid().setItems(patientService.findAll());
+                });
+            });
+        });
 
         menu.addItem(DELETE, event -> {
             event.getItem().ifPresent(patient -> {
