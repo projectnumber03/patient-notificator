@@ -12,7 +12,7 @@ spring:
   mail:
     host: smtp.yandex.ru
     from: dunderflute@yandex.ru
-    to: abarakus@bk.ru
+    to: abarakus@bk.ru #адрес(а) для отправки отчётов (через запятую, без пробелов)
     subject: Список пациентов
     username: dunderflute
     password: syxlqgfuuwhplcwr
