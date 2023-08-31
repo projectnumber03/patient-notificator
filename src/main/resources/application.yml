@@ -13,7 +13,7 @@ spring:
     host: smtp.yandex.ru
     from: dunderflute@yandex.ru
     to: abarakus@bk.ru #адрес(а) для отправки отчётов (через запятую, без пробелов)
-    subject: Список пациентов
+    subject: Список пациентов #тема письма с отчетом (+[дата отчёта])
     username: dunderflute
     password: syxlqgfuuwhplcwr
     port: 465
