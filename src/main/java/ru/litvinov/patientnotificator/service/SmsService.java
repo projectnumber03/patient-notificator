@@ -31,7 +31,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SmsService {
+public class SmsService implements SmsServiceMBean {
 
     @Value("${exolve.sms.token}")
     private String token;
@@ -105,6 +105,11 @@ public class SmsService {
             });
         });
         ui.access(() -> table.setItems(patientRepository.findAll()));
+    }
+
+    @Override
+    public void clean() {
+        smsRepository.deleteAll();
     }
 
 }
