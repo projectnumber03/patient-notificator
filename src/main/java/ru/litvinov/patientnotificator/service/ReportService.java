@@ -71,6 +71,7 @@ public class ReportService implements ReportServiceMBean {
                 .collect(Collectors.joining());
         final var text = TABLE_PATTERN.replace(":rows", rows);
         mailService.sendMail(text);
+        reportRepository.deleteAll(reports);
     }
 
     @Override
