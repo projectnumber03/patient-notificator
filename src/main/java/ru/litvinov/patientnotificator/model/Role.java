@@ -10,7 +10,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @Table(name = "ROLES")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

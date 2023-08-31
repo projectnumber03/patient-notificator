@@ -8,12 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import ru.litvinov.patientnotificator.model.Layout;
-import ru.litvinov.patientnotificator.model.Patient;
-import ru.litvinov.patientnotificator.model.SchedulerTask;
-import ru.litvinov.patientnotificator.model.Sms;
+import ru.litvinov.patientnotificator.model.*;
 import ru.litvinov.patientnotificator.repository.SchedulerTaskRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -42,6 +40,8 @@ public class SchedulerService {
     private final ConcurrentLinkedDeque<SchedulerTask> taskCache = new ConcurrentLinkedDeque<>();
 
     private final SchedulerTaskRepository schedulerTaskRepository;
+
+    private final ReportService reportService;
 
     private final SmsService smsService;
 
@@ -81,6 +81,7 @@ public class SchedulerService {
             final var patient = schedulerTask.getPatient();
             final var layout = schedulerTask.getLayout();
             smsService.send(new Sms(UUID.randomUUID(), phone, patient.getPhone().replace("+", ""), layout.getMessage().replaceAll(NAME_TAG, patient.getName())));
+            reportService.save(new Report(UUID.randomUUID(), patient, LocalDate.now()));
             taskCache.remove(schedulerTask);
             schedulerTaskRepository.delete(schedulerTask);
         };

@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import ru.litvinov.patientnotificator.component.pagination.PaginatedGrid;
 import ru.litvinov.patientnotificator.dto.SmsDTO;
 import ru.litvinov.patientnotificator.model.Patient;
+import ru.litvinov.patientnotificator.model.Report;
 import ru.litvinov.patientnotificator.model.Sms;
 import ru.litvinov.patientnotificator.repository.PatientRepository;
 import ru.litvinov.patientnotificator.repository.SmsRepository;
@@ -21,9 +22,11 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -45,6 +48,8 @@ public class SmsService {
     private final SmsRepository smsRepository;
 
     private final PatientRepository patientRepository;
+
+    private final ReportService reportService;
 
     private final HttpClient httpClient;
 
@@ -96,6 +101,7 @@ public class SmsService {
                 p.setCheckedOn(LocalDateTime.now());
                 p.setState(state);
                 patientRepository.save(p);
+                reportService.save(new Report(UUID.randomUUID(), p, LocalDate.now()));
             });
         });
         ui.access(() -> table.setItems(patientRepository.findAll()));

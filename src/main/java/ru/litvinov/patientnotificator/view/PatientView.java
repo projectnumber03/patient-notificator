@@ -27,6 +27,7 @@ import ru.litvinov.patientnotificator.component.PatientTableContextMenu;
 import ru.litvinov.patientnotificator.component.pagination.PaginatedGrid;
 import ru.litvinov.patientnotificator.model.Patient;
 import ru.litvinov.patientnotificator.service.PatientService;
+import ru.litvinov.patientnotificator.service.ReportService;
 import ru.litvinov.patientnotificator.service.SchedulerService;
 import ru.litvinov.patientnotificator.service.SmsService;
 
@@ -46,6 +47,8 @@ public class PatientView extends AbstractView {
 
     private final SchedulerService schedulerService;
 
+    private final ReportService reportService;
+
     private final PatientFilter patientFilter;
 
     private final PaginatedGrid<Patient> table;
@@ -54,10 +57,12 @@ public class PatientView extends AbstractView {
             final PatientService patientService,
             final SmsService smsService,
             final SchedulerService schedulerService,
+            final ReportService reportService,
             final PatientFilter patientFilter
     ) {
         this.patientService = patientService;
         this.schedulerService = schedulerService;
+        this.reportService = reportService;
         this.patientFilter = patientFilter;
         this.table = createTable();
         smsService.setUi(UI.getCurrent());
@@ -104,7 +109,7 @@ public class PatientView extends AbstractView {
             span.getElement().getThemeList().add("badge contrast");
             return span;
         }).setHeader("Самочувствие");
-        new PatientTableContextMenu(grid, patientService, schedulerService, patientFilter);
+        new PatientTableContextMenu(grid, patientService, schedulerService, reportService, patientFilter);
         final var headerRow = grid.appendHeaderRow();
         final var paginatedGrid = new PaginatedGrid<>(grid);
         headerRow.getCell(nameColumn).setComponent(createTextFilterHeader(v -> {

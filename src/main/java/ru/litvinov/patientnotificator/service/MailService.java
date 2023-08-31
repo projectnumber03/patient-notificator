@@ -9,6 +9,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,7 @@ public class MailService {
             final var helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(from);
             helper.setTo(to.split(","));
-            helper.setSubject(subject);
+            helper.setSubject(subject + String.format(" [%s]", DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.now())));
             helper.setText(text, true);
             mailSender.send(message);
         } catch (MessagingException e) {
