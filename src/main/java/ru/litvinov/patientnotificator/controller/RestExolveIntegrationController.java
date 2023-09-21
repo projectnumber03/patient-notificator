@@ -16,7 +16,7 @@ public class RestExolveIntegrationController {
     private final SmsService smsService;
 
     @PostMapping("/api")
-    public String postTest(@RequestBody final SmsDTO smsDTO) {
+    public String receiveMessage(@RequestBody final SmsDTO smsDTO) {
         log.info("received {}", smsDTO.toString());
         smsService.receive(smsDTO);
         return smsDTO.toString();
