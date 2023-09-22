@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ReportRepository extends JpaRepository<Report, UUID> {
-    void deleteAllByPatient(final Patient patient);
+    List<Report> findAllByPatient(final Patient patient);
     boolean existsAllByPatientAndDate(final Patient patient, final LocalDate date);
     List<Report> findAllByDate(final LocalDate date);
 }

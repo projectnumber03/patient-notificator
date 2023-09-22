@@ -87,7 +87,7 @@ public class LayoutView extends AbstractView {
 
     private ComponentRenderer<HorizontalLayout, Layout> createActionRenderer() {
         final SerializableBiConsumer<HorizontalLayout, Layout> actionProcessor = (horizontalLayout, layout) -> {
-            final Runnable callback = () -> {
+            final ConfirmationDialog.Callback callback = () -> {
                 layoutService.delete(layout);
                 table.setItems(layoutService.findAll());
             };

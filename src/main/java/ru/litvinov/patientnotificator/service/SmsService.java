@@ -81,8 +81,6 @@ public class SmsService implements SmsServiceMBean {
             log.info("null external id");
             return;
         }
-        final var allSmsByExternalId = smsRepository.findAllByExternalId(externalId);
-        if (!CollectionUtils.isEmpty(allSmsByExternalId)) return;
         if (Arrays.stream(Patient.State.values()).map(Patient.State::getCommand).noneMatch(smsDTO.getText().strip()::equals)) {
             log.info("wrong answer \"{}\"", smsDTO.getText());
             return;

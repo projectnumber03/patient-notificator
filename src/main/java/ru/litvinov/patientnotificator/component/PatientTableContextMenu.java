@@ -3,9 +3,9 @@ package ru.litvinov.patientnotificator.component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.router.QueryParameters;
 import ru.litvinov.patientnotificator.model.Patient;
+import ru.litvinov.patientnotificator.service.ISchedulerService;
 import ru.litvinov.patientnotificator.service.PatientService;
 import ru.litvinov.patientnotificator.service.ReportService;
-import ru.litvinov.patientnotificator.service.SchedulerService;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import static ru.litvinov.patientnotificator.util.Constants.*;
 
 public class PatientTableContextMenu {
 
-    public PatientTableContextMenu(final Grid<Patient> grid, final PatientService patientService, final SchedulerService schedulerService, final ReportService reportService, final PatientFilter patientFilter) {
+    public PatientTableContextMenu(final Grid<Patient> grid, final PatientService patientService, final ISchedulerService schedulerService, final ReportService reportService, final PatientFilter patientFilter) {
         final var menu = grid.addContextMenu();
 
         final var editItem = menu.addItem(EDIT);
@@ -56,7 +56,7 @@ public class PatientTableContextMenu {
 
         menu.addItem(DELETE, event -> {
             event.getItem().ifPresent(patient -> {
-                final Runnable callback = () -> {
+                final ConfirmationDialog.Callback callback = () -> {
                     schedulerService.deleteAllByPatient(patient);
                     reportService.deleteAllByPatient(patient);
                     patientService.delete(patient);

@@ -21,14 +21,15 @@ import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.litvinov.patientnotificator.component.NewButton;
 import ru.litvinov.patientnotificator.component.PatientFilter;
 import ru.litvinov.patientnotificator.component.PatientTableContextMenu;
 import ru.litvinov.patientnotificator.component.pagination.PaginatedGrid;
 import ru.litvinov.patientnotificator.model.Patient;
+import ru.litvinov.patientnotificator.service.ISchedulerService;
 import ru.litvinov.patientnotificator.service.PatientService;
 import ru.litvinov.patientnotificator.service.ReportService;
-import ru.litvinov.patientnotificator.service.SchedulerService;
 import ru.litvinov.patientnotificator.service.SmsService;
 
 import java.time.LocalDate;
@@ -45,7 +46,7 @@ public class PatientView extends AbstractView {
 
     private final PatientService patientService;
 
-    private final SchedulerService schedulerService;
+    private final ISchedulerService schedulerService;
 
     private final ReportService reportService;
 
@@ -56,7 +57,7 @@ public class PatientView extends AbstractView {
     public PatientView(
             final PatientService patientService,
             final SmsService smsService,
-            final SchedulerService schedulerService,
+            @Qualifier("androidAppSchedulerService") final ISchedulerService schedulerService,
             final ReportService reportService,
             final PatientFilter patientFilter
     ) {

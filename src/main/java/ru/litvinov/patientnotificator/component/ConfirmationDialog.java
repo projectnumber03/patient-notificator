@@ -15,13 +15,13 @@ public class ConfirmationDialog extends Dialog {
 
     private final String message;
 
-    private final Runnable callback;
+    private final Callback callback;
 
-    public ConfirmationDialog(final String message, final Runnable callback) {
+    public ConfirmationDialog(final String message, final Callback callback) {
         this(message, callback, true);
     }
 
-    public ConfirmationDialog(final String message, final Runnable callback, final boolean closeOnOutsideClick) {
+    public ConfirmationDialog(final String message, final Callback callback, final boolean closeOnOutsideClick) {
         setCloseOnOutsideClick(closeOnOutsideClick);
         this.message = message;
         this.callback = callback;
@@ -42,7 +42,7 @@ public class ConfirmationDialog extends Dialog {
         Optional.ofNullable(message).map(Label::new).ifPresent(fieldLayout::add);
         final var cancelButton = new Button("Отмена", e -> dialog.close());
         final var saveButton = new Button("ОК", e -> {
-            Optional.ofNullable(callback).ifPresent(Runnable::run);
+            Optional.ofNullable(callback).ifPresent(Callback::run);
             dialog.close();
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -53,6 +53,11 @@ public class ConfirmationDialog extends Dialog {
         dialogLayout.setAlignItems(FlexComponent.Alignment.STRETCH);
         dialogLayout.getStyle().set("width", "300px").set("max-width", "100%");
         return dialogLayout;
+    }
+
+    @FunctionalInterface
+    public interface Callback {
+        void run();
     }
 
 }

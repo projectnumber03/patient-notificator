@@ -5,6 +5,7 @@ import ru.litvinov.patientnotificator.model.Layout;
 import ru.litvinov.patientnotificator.model.Patient;
 import ru.litvinov.patientnotificator.model.SchedulerTask;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,5 +13,7 @@ public interface SchedulerTaskRepository extends JpaRepository<SchedulerTask, UU
     List<SchedulerTask> findAllByPatientAndLayout_Type(final Patient patient, final Layout.Type layoutType);
 
     List<SchedulerTask> findAllByPatient(final Patient patient);
+
+    List<SchedulerTask> findAllByExecutionDateLessThanEqual(final LocalDateTime executionDate);
 
 }

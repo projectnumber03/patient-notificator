@@ -20,7 +20,11 @@ public class SecurityConfig extends VaadinWebSecurity {
 
     @Override
     protected void configure(final WebSecurity web) throws Exception {
-        web.ignoring().requestMatchers("/api");
+        web.ignoring().requestMatchers(
+                "/report"
+                , "/task"
+                , "/api"
+        );
         super.configure(web);
     }
 

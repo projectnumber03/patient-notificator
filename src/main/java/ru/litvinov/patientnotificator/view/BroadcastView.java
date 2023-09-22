@@ -15,10 +15,11 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.litvinov.patientnotificator.component.ConfirmationDialog;
 import ru.litvinov.patientnotificator.component.pagination.PaginatedGrid;
 import ru.litvinov.patientnotificator.model.SchedulerTask;
-import ru.litvinov.patientnotificator.service.SchedulerService;
+import ru.litvinov.patientnotificator.service.ISchedulerService;
 
 import java.time.format.DateTimeFormatter;
 
@@ -30,11 +31,11 @@ import static ru.litvinov.patientnotificator.util.Constants.DELETE;
 @Route(value = "broadcasts", layout = MainView.class)
 public class BroadcastView extends AbstractView {
 
-    private final SchedulerService schedulerService;
+    private final ISchedulerService schedulerService;
 
     private final PaginatedGrid<SchedulerTask> table;
 
-    public BroadcastView(final SchedulerService schedulerService) {
+    public BroadcastView(@Qualifier("androidAppSchedulerService") final ISchedulerService schedulerService) {
         this.schedulerService = schedulerService;
         this.table = createTable();
     }
@@ -65,7 +66,7 @@ public class BroadcastView extends AbstractView {
 
     private ComponentRenderer<HorizontalLayout, SchedulerTask> createActionRenderer() {
         final SerializableBiConsumer<HorizontalLayout, SchedulerTask> actionProcessor = (horizontalLayout, st) -> {
-            final Runnable callback = () -> {
+            final ConfirmationDialog.Callback callback = () -> {
                 schedulerService.delete(st);
                 table.setItems(schedulerService.getTaskCache());
             };

@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import ru.litvinov.patientnotificator.model.Patient;
 import ru.litvinov.patientnotificator.model.Report;
 import ru.litvinov.patientnotificator.repository.ReportRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -86,9 +88,18 @@ public class ReportService implements ReportServiceMBean {
         reportRepository.save(report);
     }
 
+    public void saveAll(final List<Report> reports) {
+        if (CollectionUtils.isEmpty(reports) || reports.stream().anyMatch(r -> reportRepository.existsAllByPatientAndDate(r.getPatient(), r.getDate()))) {
+            return;
+        }
+        reportRepository.saveAll(reports);
+    }
+
     public void deleteAllByPatient(final Patient patient) {
         if (Objects.isNull(patient)) return;
-        reportRepository.deleteAllByPatient(patient);
+        final var allByPatient = reportRepository.findAllByPatient(patient);
+        if (CollectionUtils.isEmpty(allByPatient)) return;
+        reportRepository.deleteAll(allByPatient);
     }
 
 }

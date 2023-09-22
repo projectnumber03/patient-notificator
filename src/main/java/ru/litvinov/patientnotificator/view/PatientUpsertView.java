@@ -11,14 +11,14 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.shared.Registration;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.PermitAll;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
 import ru.litvinov.patientnotificator.model.Layout;
 import ru.litvinov.patientnotificator.model.Patient;
+import ru.litvinov.patientnotificator.service.ISchedulerService;
 import ru.litvinov.patientnotificator.service.LayoutService;
 import ru.litvinov.patientnotificator.service.PatientService;
 import ru.litvinov.patientnotificator.service.PhoneNumberService;
-import ru.litvinov.patientnotificator.service.SchedulerService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -29,7 +29,6 @@ import static ru.litvinov.patientnotificator.util.Constants.*;
 
 @PermitAll
 @PageTitle(PATIENT)
-@RequiredArgsConstructor
 @Route(value = "patients/upsert", layout = MainView.class)
 public class PatientUpsertView extends AbstractView implements HasUrlParameter<String>, Validatable {
 
@@ -39,7 +38,7 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
 
     private final PhoneNumberService phoneNumberService;
 
-    private final SchedulerService schedulerService;
+    private final ISchedulerService schedulerService;
 
     private final TextField fioField = new TextField("ФИО");
 
@@ -52,6 +51,18 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
     private final Button saveButton = new Button(SAVE);
 
     private Registration saveListener;
+
+    public PatientUpsertView(
+            final PatientService patientService,
+            final LayoutService layoutService,
+            final PhoneNumberService phoneNumberService,
+            @Qualifier("androidAppSchedulerService") final ISchedulerService schedulerService
+    ) {
+        this.patientService = patientService;
+        this.layoutService = layoutService;
+        this.phoneNumberService = phoneNumberService;
+        this.schedulerService = schedulerService;
+    }
 
     @Override
     @PostConstruct

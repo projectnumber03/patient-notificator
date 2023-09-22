@@ -14,9 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.util.CollectionUtils;
 import ru.litvinov.patientnotificator.model.Layout;
 import ru.litvinov.patientnotificator.model.SchedulerTask;
+import ru.litvinov.patientnotificator.service.ISchedulerService;
 import ru.litvinov.patientnotificator.service.LayoutService;
 import ru.litvinov.patientnotificator.service.PatientService;
-import ru.litvinov.patientnotificator.service.SchedulerService;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +33,7 @@ public class PatientBroadcastView extends AbstractView implements HasUrlParamete
 
     private final PatientService patientService;
 
-    private final SchedulerService schedulerService;
+    private final ISchedulerService schedulerService;
 
     private final DatePicker.DatePickerI18n i18n;
 
