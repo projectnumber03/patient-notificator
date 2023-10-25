@@ -56,7 +56,7 @@ public class ReportService implements ReportServiceMBean {
                 <td>%s</td>
                 <td>%s</td>
                 <td>%s</td>
-                <td>%s</td>
+                <td bgcolor="%s">%s</td>
             </tr>
             """;
 
@@ -69,7 +69,7 @@ public class ReportService implements ReportServiceMBean {
         final var reports = reportRepository.findAllByDate(LocalDate.now());
         final var rows = reports.stream()
                 .map(Report::getPatient)
-                .map(p -> String.format(ROW_PATTERN, p.getName(), p.getFileNumber(), p.getPhone(), Optional.ofNullable(p.getState()).map(Patient.State::getDescription).orElse("н/д")))
+                .map(p -> String.format(ROW_PATTERN, p.getName(), p.getFileNumber(), p.getPhone(), Optional.ofNullable(p.getState()).map(s -> s == Patient.State.GOOD ? "green" : "red").orElse("white"), Optional.ofNullable(p.getState()).map(Patient.State::getDescription).orElse("н/д")))
                 .collect(Collectors.joining());
         final var text = TABLE_PATTERN.replace(":rows", rows);
         mailService.sendMail(text);
