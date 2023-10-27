@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface SmsRepository extends JpaRepository<Sms, UUID> {
     List<Sms> findAllByExternalId(final Long externalId);
+    Boolean existsByExternalId(final Long externalId);
 }

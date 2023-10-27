@@ -1,5 +1,6 @@
 package ru.litvinov.patientnotificator.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -17,20 +18,21 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SmsDTO {
 
-    @JsonProperty("message_id")
+    @JsonProperty("id")
     Long messageId;
 
-    @JsonProperty("date")
+    @JsonProperty("received")
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     LocalDateTime date;
 
-    @JsonProperty("sender")
+    @JsonProperty("phone")
     String sender;
 
-    @JsonProperty("receiver")
+    @JsonProperty("to_phone")
     String receiver;
 
-    @JsonProperty("text")
+    @JsonProperty("message")
     String text;
 
     @JsonProperty("direction")

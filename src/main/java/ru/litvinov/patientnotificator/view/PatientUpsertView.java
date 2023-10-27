@@ -11,7 +11,6 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.shared.Registration;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
 import ru.litvinov.patientnotificator.model.Layout;
 import ru.litvinov.patientnotificator.model.Patient;
@@ -56,7 +55,7 @@ public class PatientUpsertView extends AbstractView implements HasUrlParameter<S
             final PatientService patientService,
             final LayoutService layoutService,
             final PhoneNumberService phoneNumberService,
-            @Qualifier("androidAppSchedulerService") final ISchedulerService schedulerService
+            final ISchedulerService schedulerService
     ) {
         this.patientService = patientService;
         this.layoutService = layoutService;

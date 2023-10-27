@@ -15,7 +15,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.litvinov.patientnotificator.component.ConfirmationDialog;
 import ru.litvinov.patientnotificator.component.pagination.PaginatedGrid;
 import ru.litvinov.patientnotificator.model.SchedulerTask;
@@ -35,7 +34,7 @@ public class BroadcastView extends AbstractView {
 
     private final PaginatedGrid<SchedulerTask> table;
 
-    public BroadcastView(@Qualifier("androidAppSchedulerService") final ISchedulerService schedulerService) {
+    public BroadcastView(final ISchedulerService schedulerService) {
         this.schedulerService = schedulerService;
         this.table = createTable();
     }

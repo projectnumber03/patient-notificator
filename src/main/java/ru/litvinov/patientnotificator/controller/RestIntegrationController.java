@@ -2,6 +2,7 @@ package ru.litvinov.patientnotificator.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,13 +22,18 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @AllArgsConstructor
-public class RestExolveIntegrationController {
+public class RestIntegrationController {
 
     private final SmsService smsService;
 
     private final ReportService reportService;
 
     private final SchedulerTaskRepository schedulerTaskRepository;
+
+    @Scheduled(fixedRate = 30000)
+    public void receiveMessage() {
+        smsService.receive();
+    }
 
     @PostMapping("/api")
     public String receiveMessage(@RequestBody final SmsDTO smsDTO) {

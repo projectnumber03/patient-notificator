@@ -1,10 +1,12 @@
 package ru.litvinov.patientnotificator.service;
 
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import ru.litvinov.patientnotificator.model.*;
 import ru.litvinov.patientnotificator.repository.SchedulerTaskRepository;
@@ -22,14 +24,14 @@ import java.util.stream.Collectors;
 import static ru.litvinov.patientnotificator.util.Constants.NAME_TAG;
 
 @Slf4j
-//@Service
+@Service
 @RequiredArgsConstructor
-public class ExolveSchedulerService implements ISchedulerService {
+public class SmscSchedulerService implements ISchedulerService {
 
-    @Value("${exolve.sms.phone}")
+    @Value("${smsc.sms.phone}")
     private String phone;
 
-    @Value("${exolve.sms.interval}")
+    @Value("${smsc.sms.interval}")
     private Integer interval;
 
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -44,7 +46,7 @@ public class ExolveSchedulerService implements ISchedulerService {
     private final SmsService smsService;
 
     @Override
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         schedulerTaskRepository.findAll().forEach(st -> {
             st.setFuture(submit(st));

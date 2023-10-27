@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -44,10 +43,6 @@ public class Sms {
         this.number = number;
         this.destination = destination;
         this.text = text;
-    }
-
-    public Map<String, Object> toMap() {
-        return Map.of("number", number, "destination", destination, "text", text);
     }
 
 }

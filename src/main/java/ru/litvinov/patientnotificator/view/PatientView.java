@@ -21,7 +21,6 @@ import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.PermitAll;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.litvinov.patientnotificator.component.NewButton;
 import ru.litvinov.patientnotificator.component.PatientFilter;
 import ru.litvinov.patientnotificator.component.PatientTableContextMenu;
@@ -57,7 +56,7 @@ public class PatientView extends AbstractView {
     public PatientView(
             final PatientService patientService,
             final SmsService smsService,
-            @Qualifier("androidAppSchedulerService") final ISchedulerService schedulerService,
+            final ISchedulerService schedulerService,
             final ReportService reportService,
             final PatientFilter patientFilter
     ) {

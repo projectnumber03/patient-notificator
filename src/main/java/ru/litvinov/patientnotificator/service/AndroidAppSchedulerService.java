@@ -3,7 +3,6 @@ package ru.litvinov.patientnotificator.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import ru.litvinov.patientnotificator.model.Layout;
 import ru.litvinov.patientnotificator.model.Patient;
@@ -18,19 +17,14 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ScheduledFuture;
 
 @Slf4j
-@Service
+//@Service
 @RequiredArgsConstructor
 public class AndroidAppSchedulerService implements ISchedulerService{
-
-    @Value("${exolve.sms.phone}")
-    private String phone;
 
     @Value("${exolve.sms.interval}")
     private Integer interval;
 
     private final SchedulerTaskRepository schedulerTaskRepository;
-
-    private final ReportService reportService;
 
     @Override
     public void init() {

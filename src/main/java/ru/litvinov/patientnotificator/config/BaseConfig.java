@@ -1,11 +1,13 @@
 package ru.litvinov.patientnotificator.config;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import ru.litvinov.patientnotificator.util.Smsc;
 
 import java.net.http.HttpClient;
 import java.util.List;
@@ -34,6 +36,11 @@ public class BaseConfig {
     @Bean
     public HttpClient httpClient() {
         return HttpClient.newHttpClient();
+    }
+
+    @Bean
+    public Smsc smsc(@Value("${smsc.sms.login}") final String login, @Value("${smsc.sms.password}") final String password) {
+        return new Smsc(login, password);
     }
 
 }
